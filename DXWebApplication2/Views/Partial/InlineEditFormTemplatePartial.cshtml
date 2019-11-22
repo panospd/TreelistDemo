@@ -1,0 +1,105 @@
+﻿
+@model DXWebApplication2.Models.EditablePost
+
+@Html.DevExpress().PageControl(settings =>
+{
+    settings.Name = "pageControl";
+    settings.ActiveTabIndex = 0;
+    settings.Width = Unit.Percentage(100);
+
+    settings.TabPages.Add(t =>
+    {
+        t.Text = "Headers";
+        t.SetContent(() =>
+        {
+            Html.DevExpress().FormLayout(flSettings =>
+            {
+                flSettings.Name = "HeadersLayout";
+                flSettings.ColCount = 2;
+                flSettings.SettingsItems.VerticalAlign = FormLayoutVerticalAlign.Middle;
+
+                flSettings.Items.Add(m => m.From, i => AssignTextBoxValidationSettings(i));
+                flSettings.Items.Add(m => m.HasAttachment);
+                flSettings.Items.Add(m => m.PostDate, i => AssignDateEditValidationSettings(i));
+                flSettings.Items.Add(m => m.IsNew);
+                flSettings.Items.Add(m => m.Subject, i => AssignTextBoxValidationSettings(i));
+                flSettings.Items.Add(m => m.ParentID, itemSettings =>
+                {
+                    itemSettings.NestedExtensionType = FormLayoutNestedExtensionItemType.ComboBox;
+                    ComboBoxSettings cb = (ComboBoxSettings)itemSettings.NestedExtensionSettings;
+                    cb.Width = Unit.Percentage(100);
+                    cb.Properties.TextField = "PostName";
+                    cb.Properties.ValueField = "PostId";
+                    cb.Properties.ValueType = typeof(int);
+                    cb.Properties.NullText = "Select Parent";
+                    cb.Properties.DataSource = Model.PostLookups;
+                });
+
+                flSettings.SettingsAdaptivity.AdaptivityMode = FormLayoutAdaptivityMode.SingleColumnWindowLimit;
+            }).Render();
+        });
+    });
+    settings.TabPages.Add(t =>
+    {
+        t.Text = "Message";
+        t.SetContent(() =>
+        {
+            Html.DevExpress().FormLayout(flSettings =>
+            {
+                flSettings.Name = "MessageLayout";
+
+                flSettings.Items.Add(m => m.Text, i =>
+                {
+                    i.CaptionSettings.Location = LayoutItemCaptionLocation.Top;
+                    i.NestedExtension().Memo(memo =>
+                    {
+                        memo.Width = Unit.Percentage(100);
+                        memo.Height = Unit.Pixel(200);
+                        memo.ShowModelErrors = true;
+                        memo.Properties.ValidationSettings.Display = Display.Dynamic;
+                    });
+                });
+
+                flSettings.SettingsAdaptivity.AdaptivityMode = FormLayoutAdaptivityMode.SingleColumnWindowLimit;
+            }).Render();
+        });
+    });
+}).GetHtml()
+
+<div style="text-align: right; margin-top: 3px">
+    @Html.DevExpress().HyperLink(edtSettings =>
+    {
+        edtSettings.Name = "hlUpdate";
+        edtSettings.Properties.Text = "Update";
+        edtSettings.ControlStyle.Font.Underline = true;
+        edtSettings.Properties.ClientSideEvents.Click = "function(s, e) { console.log(s); console.log(e); treeList.UpdateEdit(); }";
+    }).GetHtml()
+    @Html.DevExpress().HyperLink(edtSettings =>
+    {
+        edtSettings.Name = "hlCancel";
+        edtSettings.Properties.Text = "Cancel";
+        edtSettings.ControlStyle.Font.Underline = true;
+        edtSettings.Properties.ClientSideEvents.Click = "function(s, e) { treeList.CancelEdit(); }";
+    }).GetHtml()
+</div>
+
+
+@functions {
+    void AssignTextBoxValidationSettings(MVCxFormLayoutItem i)
+    {
+        i.NestedExtension().TextBox(tb =>
+        {
+            tb.ShowModelErrors = true;
+            tb.Properties.ValidationSettings.Display = Display.Dynamic;
+        });
+    }
+
+    void AssignDateEditValidationSettings(MVCxFormLayoutItem i)
+    {
+        i.NestedExtension().DateEdit(de =>
+        {
+            de.ShowModelErrors = true;
+            de.Properties.ValidationSettings.Display = Display.Dynamic;
+        });
+    }
+}

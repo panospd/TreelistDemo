@@ -1,0 +1,140 @@
+@using DevExpress.Web.ASPxHtmlEditor.Internal
+@using DevExpress.Web.ASPxTreeList
+@using DXWebApplication2.Models
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@model  IEnumerable<DXWebApplication2.Models.EditablePost>
+
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+}
+
+<style>
+    #treeList {
+        margin: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    <div style="margin: 60px 0 20px 0">
+        <h1 style="text-align: center!important">DevExpress Treelist Demo</h1>
+    </div>
+
+    <div style="width: 60%; margin: 0 auto 0 auto">
+        <div class="form-group" style="margin: 60px 0 20px 0;">
+            <div class="form-check">
+                <input type="checkbox" name="Hierarchy" class="form-check-input" id="hierarchycheckBoxId">
+                @Html.Label("Hierarchy")
+            </div>
+        </div>
+    </div>
+
+    <div>
+            @Html.DevExpress().TreeList(settings =>
+       {
+           settings.Name = "treeList";
+
+           settings.CallbackRouteValues = new
+           {
+               Controller = "Home",
+               Action = "InlineEditingWithTemplatePartial",
+       };
+
+                settings.SettingsEditing.AddNewNodeRouteValues = new
+                {
+                    Controller = "Home",
+                    Action = "InlineEditingWithTemplateAddNewPostPartial"
+                };
+                settings.SettingsEditing.UpdateNodeRouteValues = new
+                {
+                    Controller = "Home",
+                    Action = "InlineEditingWithTemplateUpdatePostPartial"
+                };
+                settings.SettingsEditing.NodeDragDropRouteValues = new
+                {
+                    Controller = "Home",
+                    Action = "InlineEditingWithTemplateMovePostPartial"
+                };
+                settings.SettingsEditing.DeleteNodeRouteValues = new
+                {
+                    Controller = "Home",
+                    Action = "InlineEditingWithTemplateDeletePostPartial"
+                };
+
+                settings.ClientSideEvents.BeginCallback = "OnTest";
+
+                settings.SettingsEditing.ConfirmDelete = true;
+                settings.Settings.GridLines = GridLines.Both;
+                settings.SettingsBehavior.ExpandCollapseAction = TreeListExpandCollapseAction.NodeDblClick;
+
+                settings.AutoGenerateColumns = false;
+                settings.Width = Unit.Percentage(60);
+
+                settings.KeyFieldName = "PostID";
+                settings.ParentFieldName = "ParentID";
+
+                settings.CommandColumn.Visible = true;
+                settings.CommandColumn.ShowNewButtonInHeader = true;
+                settings.CommandColumn.NewButton.Visible = true;
+                settings.CommandColumn.DeleteButton.Visible = true;
+                settings.CommandColumn.EditButton.Visible = true;
+
+                settings.Columns.Add("From");
+                settings.Columns.Add("Subject");
+                settings.Columns.Add(c =>
+                {
+                    c.FieldName = "PostDate";
+                    c.Caption = "Date";
+                    c.EditorProperties().DateEdit(p =>
+                    {
+                        c.FieldName = "PostDate";
+                        c.ColumnType = MVCxTreeListColumnType.DateEdit;
+                        c.HeaderStyle.HorizontalAlign = HorizontalAlign.Center;
+                    });
+                });
+                settings.Columns.Add(c =>
+                {
+                    c.FieldName = "IsNew";
+                    c.ColumnType = MVCxTreeListColumnType.CheckBox;
+                    c.HeaderStyle.HorizontalAlign = HorizontalAlign.Center;
+                });
+                settings.Columns.Add(c =>
+                {
+                    c.FieldName = "HasAttachment";
+                    c.ColumnType = MVCxTreeListColumnType.CheckBox;
+                    c.HeaderStyle.HorizontalAlign = HorizontalAlign.Center;
+                });
+
+                settings.PreRender = (sender, e) =>
+                {
+                    MVCxTreeList treeListControl = (MVCxTreeList)sender;
+                    treeListControl.ExpandToLevel(3);
+                };
+                settings.CellEditorInitialize = (sender, e) =>
+                {
+                    var editor = e.Editor as ASPxEdit;
+                    editor.ValidationSettings.Display = Display.Dynamic;
+                };
+            }).SetEditErrorText(ViewData["EditNodeError"] as string).Bind(Model).GetHtml()
+       
+    </div>
+}
+
+@section scripts {
+    <script>
+        function OnTest(s, e) {
+            if (e.command === 'MoveNode') {
+                e.customArgs['hierarchy'] = $('#hierarchycheckBoxId')[0].checked;
+            }
+        };
+    </script>
+}
+
+
+

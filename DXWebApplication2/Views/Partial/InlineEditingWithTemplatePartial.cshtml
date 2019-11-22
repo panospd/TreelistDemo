@@ -1,0 +1,57 @@
+﻿@using System.Web.Mvc.Html
+@using DevExpress.Web.ASPxTreeList
+@using DXWebApplication2.Helper
+
+@Html.DevExpress().TreeList(settings =>
+{
+    settings.Name = "treeList";
+    settings.SettingsBehavior.AllowDragDrop = true;
+    settings.SettingsBehavior.AllowSort = true;
+    settings.CallbackRouteValues = new { Controller = "Home", Action = "InlineEditingWithTemplatePartial" };
+    settings.SettingsEditing.AddNewNodeRouteValues = new { Controller = "Home", Action = "InlineEditingWithTemplateAddNewPostPartial" };
+    settings.SettingsEditing.UpdateNodeRouteValues = new { Controller = "Home", Action = "InlineEditingWithTemplateUpdatePostPartial" };
+    settings.SettingsEditing.NodeDragDropRouteValues = new { Controller = "Home", Action = "InlineEditingWithTemplateMovePostPartial" };
+    settings.SettingsEditing.DeleteNodeRouteValues = new { Controller = "Home", Action = "InlineEditingWithTemplateDeletePostPartial" };
+
+    settings.SettingsEditing.Mode = TreeListEditMode.EditFormAndDisplayNode;
+    settings.SettingsEditing.ConfirmDelete = true;
+    settings.Settings.GridLines = System.Web.UI.WebControls.GridLines.Both;
+    settings.SettingsBehavior.ExpandCollapseAction = TreeListExpandCollapseAction.NodeDblClick;
+
+    settings.AutoGenerateColumns = false;
+    settings.Width = Unit.Percentage(100);
+
+    settings.KeyFieldName = "PostID";
+    settings.ParentFieldName = "ParentID";
+
+    settings.CommandColumn.Visible = true;
+    settings.CommandColumn.ShowNewButtonInHeader = true;
+    settings.CommandColumn.NewButton.Visible = true;
+    settings.CommandColumn.DeleteButton.Visible = true;
+    settings.CommandColumn.EditButton.Visible = true;
+
+    settings.Columns.Add("From");
+    settings.Columns.Add("Subject");
+    settings.Columns.Add("PostDate", "Date", MVCxTreeListColumnType.DateEdit);
+    settings.Columns.Add("IsNew", MVCxTreeListColumnType.CheckBox);
+    settings.Columns.Add("HasAttachment", MVCxTreeListColumnType.CheckBox);
+
+
+    settings.SetEditFormTemplateContent(c =>
+    {
+        var model = TreeListInlineEditingDemoHelper.GetEditedPost(c);
+
+        if (!string.IsNullOrWhiteSpace(c.TreeList.NewNodeParentKey))
+        {
+            model.ParentID = c.TreeList.NewNodeParentKey.AsInt();
+        }
+
+        Html.RenderPartial("../Partial/InlineEditFormTemplatePartial", model);
+    });
+
+    settings.PreRender = (sender, e) => {
+        MVCxTreeList treeListControl = (MVCxTreeList)sender;
+        treeListControl.ExpandToLevel(3);
+        treeListControl.StartEdit("2");
+    };
+}).SetEditErrorText(ViewData["EditNodeError"] as string).Bind(Model).GetHtml()

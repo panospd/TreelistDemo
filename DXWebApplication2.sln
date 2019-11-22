@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DXWebApplication2", "DXWebApplication2\DXWebApplication2.csproj", "{A4624660-1D43-4149-A651-2891E813D86B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4624660-1D43-4149-A651-2891E813D86B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4624660-1D43-4149-A651-2891E813D86B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4624660-1D43-4149-A651-2891E813D86B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4624660-1D43-4149-A651-2891E813D86B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A30E8AC4-2904-4CAD-A9EA-446A16CD2F29}
+	EndGlobalSection
+EndGlobal
